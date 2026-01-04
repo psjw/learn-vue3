@@ -2,54 +2,69 @@
 	<div>
 		<div class="card">
 			<div class="card-body">
+				{{ $props }}
 				<!-- {{ $style }} -->
 				<!-- {{ classes }} -->
-				<h5 class="card-title red">Card title</h5>
+				<!-- type: new, notice -->
+				<span class="badge text-bg-secondary">{{ typeName }}</span>
+				<h5 class="card-title red mt-2">{{ title }}</h5>
 				<!-- <p class="card-text" :class="$style.red"> -->
 				<p class="card-text">
-					Some quick example text to build on the card title and make up the
-					bulk of the card's content.
+					{{ contents }}
 				</p>
-				<a href="#" class="btn btn-primary">Go somewhere</a>
+				<!-- <a v-if="isLike" href="#" class="btn btn-danger">좋아요</a>
+				<a v-else href="#" class="btn btn-outline-danger">좋아요</a> -->
+				<a href="#" class="btn" :class="isLikeClass" @click="toggleLike"
+					>좋아요</a
+				>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-import { useCssModule, ref } from 'vue';
-console.log('AppCard module');
+import { computed } from 'vue';
 export default {
-	setup() {
-		// const style = useCssModule();
-		// console.log('style', style);
-		console.log('AppCard setup()');
-
-		const color = ref('red');
-		color.value = 'blue';
-		return { color };
+	props: {
+		type: {
+			type: String,
+			default: 'news',
+			validator: value => {
+				return ['news', 'notice'].includes(value);
+			},
+		},
+		title: {
+			type: String,
+			required: true,
+		},
+		contents: {
+			type: String,
+			required: true,
+		},
+		isLike: {
+			type: Boolean,
+			default: false,
+		},
+		obj: {
+			type: Object,
+			default: () => ({}),
+		},
+	},
+	emits: ['toggleLike'],
+	setup(props, context) {
+		console.log('props.title', props.title);
+		const isLikeClass = computed(() =>
+			props.isLike ? 'btn-danger' : 'btn-outline-danger',
+		);
+		const typeName = computed(() =>
+			props.type == 'news' ? '뉴스' : '공지사항',
+		);
+		//자식 > 부모는 변경이 안됨 context의 emit으로 올림
+		const toggleLike = () => {
+			// props.isLike = !props.isLike;
+			context.emit('toggleLike');
+		};
+		return { isLikeClass, typeName, toggleLike };
 	},
 };
 </script>
-<style>
-.red {
-	color: v-bind(color) !important;
-}
-</style>
-<!-- <style module>
-.red {
-	color: red;
-}
-</style> -->
-
-<!-- <style module="classes">
-.red {
-	color: red;
-}
-</style> -->
-
-<!-- <style scoped>
-.red {
-	color: red;
-}
-</style?> -->
