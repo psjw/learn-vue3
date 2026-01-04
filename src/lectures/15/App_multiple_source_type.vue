@@ -52,6 +52,7 @@ export default {
 		// 	console.log('newValue: ', newValue);
 		// });
 		console.log(typeof person.obj);
+		// person.obj의 자체가 변경되어야함 -> count증가는 잡히지 않음
 		watch(
 			() => person.obj,
 			newValue => {
